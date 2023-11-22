@@ -12,4 +12,5 @@ node_modules
 # solidity-coverage files
 /coverage
 /coverage.json
-/hardhart.config.js
+
+hardhart.config.js
