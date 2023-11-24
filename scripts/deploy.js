@@ -51,13 +51,21 @@ async function main() {
     await extensionOfficerReporting.deployed();
     console.log("ExtensionOfficerReporting deployed to:", extensionOfficerReporting.address);
 
-    // Deploying AIAnalyticsIntegration contract
-    const AIAnalyticsIntegration = await ethers.getContractFactory("AIAnalyticsIntegration");
-    console.log("Deploying AIAnalyticsIntegration...");
-    // oracleAddress, jobId, and fee are placeholders for the actual values you want to use. You'll need to replace them with the appropriate values for your use case
-    const aiAnalyticsIntegration = await AIAnalyticsIntegration.deploy(oracleAddress, jobId, fee);
-    await aiAnalyticsIntegration.deployed();
-    console.log("AIAnalyticsIntegration deployed to:", aiAnalyticsIntegration.address);
+    // // Deploying AIAnalyticsIntegration contract
+    // const AIAnalyticsIntegration = await ethers.getContractFactory("AIAnalyticsIntegration");
+    // console.log("Deploying AIAnalyticsIntegration...");
+    // // oracleAddress, jobId, and fee are placeholders for the actual values you want to use. You'll need to replace them with the appropriate values for your use case
+    // const aiAnalyticsIntegration = await AIAnalyticsIntegration.deploy(oracleAddress, jobId, fee);
+    // await aiAnalyticsIntegration.deployed();
+    // console.log("AIAnalyticsIntegration deployed to:", aiAnalyticsIntegration.address);
+
+    // Deploying InHouseLoanService contract
+    const InHouseLoanService = await ethers.getContractFactory("InHouseLoanService");
+    console.log("Deploying InHouseLoanService...");
+    const inHouseLoanService = await InHouseLoanService.deploy();
+    await inHouseLoanService.deployed();
+    console.log("InHouseLoanService deployed to:", inHouseLoanService.address);
+
 }
 
 // We recommend this pattern to be able to use async/await everywhere

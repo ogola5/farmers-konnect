@@ -4,7 +4,7 @@ pragma solidity ^0.8.0;
 contract InvestorFarmerRegistration {
     // Struct to hold minimal on-chain data
     struct Profile {
-        string ipfsHash; // IPFS hash for detailed profile data
+        string data; // Directly storing profile data
         bool isRegistered;
     }
 
@@ -13,8 +13,8 @@ contract InvestorFarmerRegistration {
     mapping(address => Profile) public farmerProfiles;
 
     // Events for profile updates
-    event InvestorProfileUpdated(address indexed investor, string newIpfsHash);
-    event FarmerProfileUpdated(address indexed farmer, string newIpfsHash);
+    event InvestorProfileUpdated(address indexed investor, string newData);
+    event FarmerProfileUpdated(address indexed farmer, string newData);
 
     // Modifier for profile ownership
     modifier onlyProfileOwner(address user, bool isInvestor) {
@@ -28,40 +28,40 @@ contract InvestorFarmerRegistration {
     }
 
     // Register an investor profile
-    function registerInvestor(string memory ipfsHash) public {
+    function registerInvestor(string memory data) public {
         require(!investorProfiles[msg.sender].isRegistered, "Investor already registered");
-        investorProfiles[msg.sender] = Profile(ipfsHash, true);
-        emit InvestorProfileUpdated(msg.sender, ipfsHash);
+        investorProfiles[msg.sender] = Profile(data, true);
+        emit InvestorProfileUpdated(msg.sender, data);
     }
 
     // Update an investor profile
-    function updateInvestorProfile(string memory newIpfsHash) public onlyProfileOwner(msg.sender, true) {
-        investorProfiles[msg.sender].ipfsHash = newIpfsHash;
-        emit InvestorProfileUpdated(msg.sender, newIpfsHash);
+    function updateInvestorProfile(string memory newData) public onlyProfileOwner(msg.sender, true) {
+        investorProfiles[msg.sender].data = newData;
+        emit InvestorProfileUpdated(msg.sender, newData);
     }
 
     // Register a farmer profile
-    function registerFarmer(string memory ipfsHash) public {
+    function registerFarmer(string memory data) public {
         require(!farmerProfiles[msg.sender].isRegistered, "Farmer already registered");
-        farmerProfiles[msg.sender] = Profile(ipfsHash, true);
-        emit FarmerProfileUpdated(msg.sender, ipfsHash);
+        farmerProfiles[msg.sender] = Profile(data, true);
+        emit FarmerProfileUpdated(msg.sender, data);
     }
 
     // Update a farmer profile
-    function updateFarmerProfile(string memory newIpfsHash) public onlyProfileOwner(msg.sender, false) {
-        farmerProfiles[msg.sender].ipfsHash = newIpfsHash;
-        emit FarmerProfileUpdated(msg.sender, newIpfsHash);
+    function updateFarmerProfile(string memory newData) public onlyProfileOwner(msg.sender, false) {
+        farmerProfiles[msg.sender].data = newData;
+        emit FarmerProfileUpdated(msg.sender, newData);
     }
 
-    // Get the IPFS hash of an investor profile
+    // Get the profile data of an investor
     function getInvestorProfile(address investor) public view returns (string memory) {
         require(investorProfiles[investor].isRegistered, "Investor not registered");
-        return investorProfiles[investor].ipfsHash;
+        return investorProfiles[investor].data;
     }
 
-    // Get the IPFS hash of a farmer profile
+    // Get the profile data of a farmer
     function getFarmerProfile(address farmer) public view returns (string memory) {
         require(farmerProfiles[farmer].isRegistered, "Farmer not registered");
-        return farmerProfiles[farmer].ipfsHash;
+        return farmerProfiles[farmer].data;
     }
 }

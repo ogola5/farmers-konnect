@@ -4,9 +4,9 @@ pragma solidity ^0.8.0;
 contract ExtensionOfficerReporting {
     address public owner;
     mapping(address => bool) public isExtensionOfficer;
-    mapping(uint256 => string) public projectReports; // Mapping project ID to IPFS hash of the report
+    mapping(uint256 => string) public projectReports; // Mapping project ID to the report content
 
-    event ReportSubmitted(uint256 indexed projectId, string reportHash);
+    event ReportSubmitted(uint256 indexed projectId, string reportContent);
     event AlertBroadcasted(uint256 indexed projectId, string alertMessage);
     event ExtensionOfficerAdded(address officer);
     event ExtensionOfficerRemoved(address officer);
@@ -35,10 +35,10 @@ contract ExtensionOfficerReporting {
         emit ExtensionOfficerRemoved(officer);
     }
 
-    function submitReport(uint256 projectId, string memory reportHash) public onlyExtensionOfficer {
-        require(bytes(reportHash).length > 0, "Invalid IPFS hash");
-        projectReports[projectId] = reportHash;
-        emit ReportSubmitted(projectId, reportHash);
+    function submitReport(uint256 projectId, string memory reportContent) public onlyExtensionOfficer {
+        require(bytes(reportContent).length > 0, "Report content cannot be empty");
+        projectReports[projectId] = reportContent;
+        emit ReportSubmitted(projectId, reportContent);
     }
 
     function broadcastAlert(uint256 projectId, string memory alertMessage) public onlyExtensionOfficer {
