@@ -1,77 +1,69 @@
 const hre = require("hardhat");
-const ethers = hre.ethers;
-
-//onst hre = require("hardhat");
 
 async function main() {
-    // Get the contract factory for EscrowAndFundsDistribution
-    const EscrowAndFundsDistribution = await hre.ethers.getContractFactory("EscrowAndFundsDistribution");
+    const [deployer] = await hre.ethers.getSigners();
+    const balance = await deployer.getBalance();
+    console.log(`Deployer balance: ${hre.ethers.utils.formatEther(balance)} ETH`);
 
-    // Deploy the contract
-    console.log("Deploying EscrowAndFundsDistribution...");
-    const escrowAndFundsDistribution = await EscrowAndFundsDistribution.deploy();
+    if (balance.lt(hre.ethers.utils.parseEther("0.1"))) {
+        throw new Error('Insufficient funds for deployment');
+    }
 
-    // Wait for the deployment to be mined
-    await escrowAndFundsDistribution.deployed();
+    // Deploy contracts
+    console.log("Starting deployment...");
+    const contractsToDeploy = [
+        "EscrowAndFundsDistribution",
+        "AgriculturalProjectManagement",
+        "SalesAndRevenueManagement",
+        "InvestorFarmerRegistration",
+        // "LandMatchingAndProjectAssignment", // Uncomment if you want to deploy this
+        "ExtensionOfficerReporting",
+        // "AIAnalyticsIntegration", // Uncomment if you want to deploy this
+        "InHouseLoanService"
+    ];
 
-    console.log("EscrowAndFundsDistribution deployed to:", escrowAndFundsDistribution.address);
+    const deployedContracts = {};
 
-    // Deploying AgriculturalProjectManagement contract
-    const AgriculturalProjectManagement = await ethers.getContractFactory("AgriculturalProjectManagement");
-    console.log("Deploying AgriculturalProjectManagement...");
-    const agriculturalProjectManagement = await AgriculturalProjectManagement.deploy();
-    await agriculturalProjectManagement.deployed();
-    console.log("AgriculturalProjectManagement deployed to:", agriculturalProjectManagement.address);
-
-    // Deploying SalesAndRevenueManagement contract
-    const SalesAndRevenueManagement = await ethers.getContractFactory("SalesAndRevenueManagement");
-    console.log("Deploying SalesAndRevenueManagement...");
-    const salesAndRevenueManagement = await SalesAndRevenueManagement.deploy();
-    await salesAndRevenueManagement.deployed();
-    console.log("SalesAndRevenueManagement deployed to:", salesAndRevenueManagement.address);
-
-    // Deploying InvestorFarmerRegistration contract
-    const InvestorFarmerRegistration = await hre.ethers.getContractFactory("InvestorFarmerRegistration");
-    console.log("Deploying InvestorFarmerRegistration...");
-    const investorFarmerRegistration = await InvestorFarmerRegistration.deploy();
-    await investorFarmerRegistration.deployed();
-    console.log("InvestorFarmerRegistration deployed to:", investorFarmerRegistration.address);
-
-    // Deploying LandMatchingAndProjectAssignment contract
-    // const LandMatchingAndProjectAssignment = await ethers.getContractFactory("LandMatchingAndProjectAssignment");
-    // console.log("Deploying LandMatchingAndProjectAssignment...");
-    // const landMatchingAndProjectAssignment = await LandMatchingAndProjectAssignment.deploy();
-    // await landMatchingAndProjectAssignment.deployed();
-    // console.log("LandMatchingAndProjectAssignment deployed to:", landMatchingAndProjectAssignment.address);
-
-    // Deploying ExtensionOfficerReporting contract
-    const ExtensionOfficerReporting = await ethers.getContractFactory("ExtensionOfficerReporting");
-    console.log("Deploying ExtensionOfficerReporting...");
-    const extensionOfficerReporting = await ExtensionOfficerReporting.deploy();
-    await extensionOfficerReporting.deployed();
-    console.log("ExtensionOfficerReporting deployed to:", extensionOfficerReporting.address);
-
-    // // Deploying AIAnalyticsIntegration contract
-    // const AIAnalyticsIntegration = await ethers.getContractFactory("AIAnalyticsIntegration");
-    // console.log("Deploying AIAnalyticsIntegration...");
-    // // oracleAddress, jobId, and fee are placeholders for the actual values you want to use. You'll need to replace them with the appropriate values for your use case
-    // const aiAnalyticsIntegration = await AIAnalyticsIntegration.deploy(oracleAddress, jobId, fee);
-    // await aiAnalyticsIntegration.deployed();
-    // console.log("AIAnalyticsIntegration deployed to:", aiAnalyticsIntegration.address);
-
-    // Deploying InHouseLoanService contract
-    const InHouseLoanService = await ethers.getContractFactory("InHouseLoanService");
-    console.log("Deploying InHouseLoanService...");
-    const inHouseLoanService = await InHouseLoanService.deploy();
-    await inHouseLoanService.deployed();
-    console.log("InHouseLoanService deployed to:", inHouseLoanService.address);
-
+    for (const contractName of contractsToDeploy) {
+        const ContractFactory = await hre.ethers.getContractFactory(contractName);
+        console.log(`Deploying ${contractName}...`);
+        const contract = await ContractFactory.deploy();
+        await contract.deployed();
+        console.log(`${contractName} deployed to:`, contract.address);
+        deployedContracts[contractName] = contract.address;
+        // Save the contract address and ABI if it's InvestorFarmerRegistration
+        if (contractName === "InvestorFarmerRegistration") {
+            saveFrontendFiles(contract);
+        }
+    }
 }
 
-// We recommend this pattern to be able to use async/await everywhere
-// and properly handle errors.
+function saveFrontendFiles(contract) {
+    const fs = require("fs");
+    const path = require("path");
+    const contractsDir = path.join(__dirname, "../frontend/src/contracts");
+
+    if (!fs.existsSync(contractsDir)) {
+        fs.mkdirSync(contractsDir, { recursive: true });
+    }
+
+    const addressFilePath = path.join(contractsDir, "contract-address.json");
+    const abiFilePath = path.join(contractsDir, "InvestorFarmerRegistration.json");
+
+    fs.writeFileSync(
+        addressFilePath,
+        JSON.stringify({ InvestorFarmerRegistration: contract.address }, undefined, 2)
+    );
+
+    const contractArtifact = hre.artifacts.readArtifactSync("InvestorFarmerRegistration");
+
+    fs.writeFileSync(
+        abiFilePath,
+        JSON.stringify(contractArtifact, null, 2)
+    );
+}
+
 main().catch((error) => {
     console.error(error);
     process.exit(1);
 });
-
