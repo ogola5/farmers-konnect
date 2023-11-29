@@ -17,9 +17,12 @@ contract SalesAndRevenueManagement {
     mapping(uint256 => Sale) public sales;
     uint256 public nextSaleId;
 
+    // Events for tracking contract interactions
     event SaleRecorded(uint256 indexed saleId, uint256 amount, address buyer, uint256 projectId);
     event ProfitsDistributed(uint256 amount);
     event PaymentsMade(uint256 amount);
+    event OwnerUpdated(address newOwner);
+    event RevenueWithdrawn(address to, uint256 amount);
 
     modifier onlyOwner() {
         require(msg.sender == owner, "Only the owner can perform this action");
@@ -30,74 +33,57 @@ contract SalesAndRevenueManagement {
         owner = msg.sender;
     }
 
+    // Record a new sale transaction
     function recordSale(uint256 projectId, uint256 amount, address buyer) public onlyOwner {
         require(amount > 0, "Sale amount must be greater than zero");
-
-        sales[nextSaleId] = Sale({
-            amount: amount,
-            buyer: buyer,
-            date: block.timestamp,
-            projectId: projectId
-        });
-
+        sales[nextSaleId] = Sale(amount, buyer, block.timestamp, projectId);
         emit SaleRecorded(nextSaleId, amount, buyer, projectId);
         nextSaleId++;
         totalRevenue += amount;
     }
 
+    // Distribute profits to investors
     function distributeProfits(uint256 amount) public onlyOwner {
         require(amount <= totalRevenue, "Insufficient funds for distribution");
-        // Logic for distributing profits to investors
-        // Update state variables accordingly
         totalDistributedToInvestors += amount;
         totalRevenue -= amount;
-
         emit ProfitsDistributed(amount);
     }
 
+    // Make payments to farmers
     function makePaymentsToFarmers(uint256 amount) public onlyOwner {
         require(amount <= totalRevenue, "Insufficient funds for payments");
-        // Logic for making payments to farmers
-        // Update state variables accordingly
         totalPaidToFarmers += amount;
         totalRevenue -= amount;
-
         emit PaymentsMade(amount);
     }
 
-    // A function to retrieve the details of a specific sale by its ID. This would be useful for external queries:
+    // Retrieve details of a specific sale by its ID
     function getSaleDetails(uint256 saleId) public view returns (Sale memory) {
         require(saleId < nextSaleId, "Sale does not exist");
         return sales[saleId];
     }
-    // In case the ownership needs to be transferred or updated:
+
+    // Update the ownership of the contract
     function updateOwner(address newOwner) public onlyOwner {
         require(newOwner != address(0), "Invalid address");
         owner = newOwner;
+        emit OwnerUpdated(newOwner);
     }
-    // To withdraw accumulated revenue to a specific address (likely the platform's operational fund):
+
+    // Withdraw accumulated revenue
     function withdrawRevenue(address payable to, uint256 amount) public onlyOwner {
         require(amount <= address(this).balance, "Insufficient balance");
         to.transfer(amount);
+        emit RevenueWithdrawn(to, amount);
     }
 
-    // Functions to check the current balance of the contract, total revenue, and distributed amounts:
+    // Check the current balance of the contract
     function checkContractBalance() public view returns (uint256) {
-    return address(this).balance;
-}
-
-    function getTotalRevenue() public view returns (uint256) {
-        return totalRevenue;
+        return address(this).balance;
     }
 
-    function getTotalDistributedToInvestors() public view returns (uint256) {
-        return totalDistributedToInvestors;
-    }
-
-    function getTotalPaidToFarmers() public view returns (uint256) {
-        return totalPaidToFarmers;
-    }
-    // Functions that provide reports or analytics, like total sales per project, average sale value,
+    // Retrieve total sales for a specific project
     function getTotalSalesForProject(uint256 projectId) public view returns (uint256) {
         uint256 totalSales = 0;
         for (uint256 i = 0; i < nextSaleId; i++) {
@@ -108,4 +94,5 @@ contract SalesAndRevenueManagement {
         return totalSales;
     }
 
+    // Additional helper functions can be added here as needed
 }

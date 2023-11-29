@@ -3,23 +3,27 @@ pragma solidity ^0.8.0;
 
 /**
  * @title Escrow and Funds Distribution
- * @dev Manages escrow services and funds distribution for various parties.
+ * @dev This contract manages escrow services and funds distribution for various parties.
+ *      It allows deposits, disbursements, and returns of funds, with event logging for each action.
  */
 contract EscrowAndFundsDistribution {
-    address public owner;
+    address public owner; // The owner of the contract
+    mapping(address => uint256) public deposits; // Mapping to keep track of each address's deposits
 
-    mapping(address => uint256) public deposits;
+    // Events to log various actions
+    event DepositMade(address indexed depositor, uint256 amount);
+    event FundsDisbursed(address indexed recipient, uint256 amount);
+    event FundsReturned(address indexed investor, uint256 amount);
 
     /**
-     * @dev Sets the original `owner` of the contract to the sender account.
+     * @dev Sets the contract's owner to the address that deploys the contract.
      */
     constructor() {
         owner = msg.sender;
     }
 
     /**
-     * @dev Modifier to restrict functions to the `owner`.
-     * @notice Restricts function access to the owner of the contract.
+     * @dev Modifier to allow only the owner to call certain functions.
      */
     modifier onlyOwner() {
         require(msg.sender == owner, "Only owner can call this function.");
@@ -27,46 +31,44 @@ contract EscrowAndFundsDistribution {
     }
 
     /**
-     * @dev Deposits funds into the contract.
-     * @notice Allows a user to deposit funds into the contract.
+     * @dev Allows an address to deposit ether into the contract.
      */
     function deposit() public payable {
         require(msg.value > 0, "Deposit amount must be greater than zero.");
         deposits[msg.sender] += msg.value;
+        emit DepositMade(msg.sender, msg.value);
     }
 
     /**
-     * @dev Disburses funds to a specified recipient.
-     * @param recipient The address of the recipient to disburse funds to.
-     * @param amount The amount of funds to disburse.
-     * @notice Only callable by the owner. Ensures contract and recipient have sufficient balance.
+     * @dev Allows the owner to disburse funds from the contract to a specified recipient.
+     * @param recipient The address of the recipient.
+     * @param amount The amount of ether to disburse.
      */
     function disburse(address payable recipient, uint256 amount) public onlyOwner {
         require(address(this).balance >= amount, "Insufficient balance in contract.");
         require(deposits[recipient] >= amount, "Insufficient deposit to disburse.");
         deposits[recipient] -= amount;
         recipient.transfer(amount);
+        emit FundsDisbursed(recipient, amount);
     }
 
     /**
-     * @dev Returns funds to the investor.
-     * @param investor The address of the investor to return funds to.
-     * @notice Only callable by the owner. Ensures the investor has funds to return.
+     * @dev Allows the owner to return deposited funds to an investor.
+     * @param investor The address of the investor.
      */
     function returnFunds(address payable investor) public onlyOwner {
         uint256 amount = deposits[investor];
         require(amount > 0, "No funds to return.");
         deposits[investor] = 0;
         investor.transfer(amount);
+        emit FundsReturned(investor, amount);
     }
 
     /**
      * @dev Retrieves the total balance held by the contract.
-     * @return The total balance held in the contract.
+     * @return The total balance of ether held in the contract.
      */
     function getBalance() public view returns (uint256) {
         return address(this).balance;
     }
-
-    // Additional functions as required
 }

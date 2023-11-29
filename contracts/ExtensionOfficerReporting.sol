@@ -5,6 +5,7 @@ contract ExtensionOfficerReporting {
     address public owner;
     mapping(address => bool) public isExtensionOfficer;
     mapping(uint256 => string) public projectReports; // Mapping project ID to the report content
+    mapping(uint256 => string) public alerts; // Mapping project ID to alerts
 
     event ReportSubmitted(uint256 indexed projectId, string reportContent);
     event AlertBroadcasted(uint256 indexed projectId, string alertMessage);
@@ -43,6 +44,15 @@ contract ExtensionOfficerReporting {
 
     function broadcastAlert(uint256 projectId, string memory alertMessage) public onlyExtensionOfficer {
         require(bytes(alertMessage).length > 0, "Alert message cannot be empty");
+        alerts[projectId] = alertMessage;
         emit AlertBroadcasted(projectId, alertMessage);
+    }
+
+    function getReport(uint256 projectId) public view returns (string memory) {
+        return projectReports[projectId];
+    }
+
+    function getAlert(uint256 projectId) public view returns (string memory) {
+        return alerts[projectId];
     }
 }
