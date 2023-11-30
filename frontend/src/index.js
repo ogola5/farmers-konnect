@@ -1,23 +1,16 @@
+// index.js
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import HomePage from './components/interaction/HomePage'; // Updated import path
-import RegisterPage from './components/pages/RegisterPage'; // Assuming this is in the correct place
+import ReactDOM from 'react-dom';
+import App from './App'; // Import App from the correct path
+import './index.css'; // Assuming you have global styles you want to apply
 
-const App = () => {
-  return (
-    <Router>
-      <div className="App">
-        <Routes>
-          <Route path="/" element={<HomePage />} exact />
-          <Route path="/register" element={<RegisterPage />} />
-          {/* Add more routes for other pages as needed */}
-        </Routes>
-      </div>
-    </Router>
-  );
-}
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root')
+);
 
-export default App;
 
 
 

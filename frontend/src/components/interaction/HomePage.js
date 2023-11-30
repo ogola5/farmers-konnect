@@ -9,6 +9,7 @@ const HomePage = () => {
     { name: 'Extension Officer Reporting', path: '/extension-officer-reporting' },
     { name: 'In House Loan Service', path: '/inhouse-loan-service' },
     { name: 'Sales and Revenue Management', path: '/sales-and-revenue-management' },
+    {name: 'RegisterPage',path: '/register'},
     // Add other contracts here...
   ];
 
