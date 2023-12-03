@@ -9,7 +9,7 @@ const EscrowInteraction = () => {
   const [investorAddress, setInvestorAddress] = useState('');
 
   // Update with the address of your deployed contract on Sepolia
-  const contractAddress = '0x...';
+  const contractAddress = '0xBF8C3f3F522C9D73FeD0D12Cf6B8936f738B6969';
 
   // Connect to MetaMask and create a signer
   const getSigner = async () => {

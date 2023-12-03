@@ -25,7 +25,7 @@ const ExtensionOfficerReportingPage = () => {
        e.preventDefault();
 
        try {
-           const account = await requestAccount(); // Request MetaMask account access
+           const account = await requestAccount();
            const provider = new ethers.providers.Web3Provider(window.ethereum);
            const signer = provider.getSigner(account);
            const reportingContract = new ethers.Contract(
@@ -33,21 +33,11 @@ const ExtensionOfficerReportingPage = () => {
                ExtensionOfficerReportingContract.abi,
                signer
            );
-           //Get the current nonce for the account
-           const nonce = await signer.getTransactionCount();
-            //Get the transaction
-           const tx = {
-               to: reportingContract.address,
-               data: reportingContract.interface.encodeFunctionData('submitReport', [projectId, reportContent]),
-               nonce: nonce,
-           };
-            
 
-           const signedTx = await signer.signTransaction(tx);
-           const txResponse= await provider.sendTransaction(signedTx);
+           const txResponse = await reportingContract.submitReport(projectId, reportContent);
            await txResponse.wait();
 
-           alert('Report submitted successfully');
+           alert('Report submitted successfully!');
        } catch (error) {
            console.error(error);
            alert('An error occurred while submitting the report.');
@@ -58,7 +48,7 @@ const ExtensionOfficerReportingPage = () => {
        e.preventDefault();
 
        try {
-           const account = await requestAccount(); // Request MetaMask account access
+           const account = await requestAccount();
            const provider = new ethers.providers.Web3Provider(window.ethereum);
            const signer = provider.getSigner(account);
            const reportingContract = new ethers.Contract(
@@ -66,23 +56,9 @@ const ExtensionOfficerReportingPage = () => {
                ExtensionOfficerReportingContract.abi,
                signer
            );
-            //Get the current nonce for the account
-            const nonce = await signer.getTransactionCount();
 
-            //Get the transaction
-            const tx ={
-                to:reportingContract.address,
-                data:reportingContract.interface.encodeFunctionData('broadcastAlert',[projectId,alertMessage]),
-                nonce:nonce,
-
-                
-
-            };
-            //Sign and send the transaction
-            const signedTx = await signer.sendTransaction(tx);
-            const txResponse  = await provider.sendTransaction(signedTx);
-            await txResponse.wait();
-           
+           const txResponse = await reportingContract.broadcastAlert(projectId, alertMessage);
+           await txResponse.wait();
 
            alert('Alert broadcasted successfully!');
        } catch (error) {
@@ -96,34 +72,34 @@ const ExtensionOfficerReportingPage = () => {
            <h1>Extension Officer Reporting</h1>
            <form onSubmit={handleSubmitReport}>
                <input
-                  type="text"
-                  value={projectId}
-                  onChange={(e) => setProjectId(e.target.value)}
-                  placeholder="Project ID"
-                  required
+                   type="text"
+                   value={projectId}
+                   onChange={(e) => setProjectId(e.target.value)}
+                   placeholder="Project ID"
+                   required
                />
                <textarea
-                  value={reportContent}
-                  onChange={(e) => setReportContent(e.target.value)}
-                  placeholder="Report Content"
-                  required
+                   value={reportContent}
+                   onChange={(e) => setReportContent(e.target.value)}
+                   placeholder="Report Content"
+                   required
                />
                <button type="submit">Submit Report</button>
            </form>
 
            <form onSubmit={handleBroadcastAlert}>
                <input
-                  type="text"
-                  value={projectId}
-                  onChange={(e) => setProjectId(e.target.value)}
-                  placeholder="Project ID"
-                  required
+                   type="text"
+                   value={projectId}
+                   onChange={(e) => setProjectId(e.target.value)}
+                   placeholder="Project ID"
+                   required
                />
                <textarea
-                  value={alertMessage}
-                  onChange={(e) => setAlertMessage(e.target.value)}
-                  placeholder="Alert Message"
-                  required
+                   value={alertMessage}
+                   onChange={(e) => setAlertMessage(e.target.value)}
+                   placeholder="Alert Message"
+                   required
                />
                <button type="submit">Broadcast Alert</button>
            </form>

@@ -44,7 +44,7 @@ const RegisterPage = () => {
             await tx.wait();
     
             alert('Registration successful!');
-        } catch (error) {
+        }catch (error) {
             console.error(error);
             alert(`An error occurred during registration: ${error.message}`);
         }
