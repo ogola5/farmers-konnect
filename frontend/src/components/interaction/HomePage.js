@@ -9,13 +9,23 @@ const HomePage = () => {
     { name: 'Extension Officer Reporting', path: '/extension-officer-reporting' },
     { name: 'In House Loan Service', path: '/inhouse-loan-service' },
     { name: 'Sales and Revenue Management', path: '/sales-and-revenue-management' },
-    {name: 'RegisterPage',path: '/register'},
+    { name: 'RegisterPage', path: '/register' },
     // Add other contracts here...
   ];
 
-  const buttonStyle = {
-    padding: '10px 20px',
+  const cardStyle = {
+    width: '300px',
+    padding: '20px',
     margin: '10px',
+    borderRadius: '8px',
+    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+    backgroundColor: '#fff',
+    transition: 'transform 0.2s',
+  };
+
+  const buttonStyle = {
+    width: '100%',
+    padding: '10px',
     backgroundColor: '#4CAF50', // This is a green color
     color: 'white',
     border: 'none',
@@ -26,9 +36,9 @@ const HomePage = () => {
 
   const containerStyle = {
     display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
+    flexWrap: 'wrap',
     justifyContent: 'center',
+    alignItems: 'center',
     marginTop: '50px',
   };
 
@@ -37,17 +47,40 @@ const HomePage = () => {
     marginBottom: '30px',
   };
 
+  const handleCardHover = (index) => {
+    const card = document.getElementById(`contract-card-${index}`);
+    card.style.transform = 'scale(1.05)';
+  };
+
+  const handleCardLeave = (index) => {
+    const card = document.getElementById(`contract-card-${index}`);
+    card.style.transform = 'scale(1)';
+  };
+
   return (
-    <div style={containerStyle}>
-      <h1 style={headerStyle}>Farmers Konnect - Contract Interaction</h1>
-      {contracts.map((contract, index) => (
-        <Link key={index} to={contract.path} style={{ textDecoration: 'none' }}>
-          <button style={buttonStyle}>{contract.name}</button>
-        </Link>
+    <div >
+    <div style={{display: 'flex', justifyContent : 'center' , alignItems: 'center'}}>
+     <h1 style={headerStyle}>Farmers Konnect - Administration</h1>
+    </div>
+
+   <div style={containerStyle}>
+   {contracts.map((contract, index) => (
+        <div
+          key={index}
+          id={`contract-card-${index}`}
+          style={cardStyle}
+          onMouseEnter={() => handleCardHover(index)}
+          onMouseLeave={() => handleCardLeave(index)}
+        >
+          <Link to={contract.path} style={{ textDecoration: 'none' }}>
+            <button style={buttonStyle}>{contract.name}</button>
+          </Link>
+        </div>
       ))}
+   </div>
+  
     </div>
   );
 };
 
 export default HomePage;
-

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import ExtensionOfficerReportingContract from '../../contracts/ExtensionOfficerReporting.json';
 import contractAddress from '../../contracts/contract-address.json';
+import '../../escrow.css';
 
 const ExtensionOfficerReportingPage = () => {
    const [projectId, setProjectId] = useState('');

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import InHouseLoanServiceContract from '../../contracts/InHouseLoanService.json';
 import contractAddress from '../../contracts/contract-address.json';
-
+import '../../escrow.css';
 
 
 const InHouseLoanServicePage = () => {

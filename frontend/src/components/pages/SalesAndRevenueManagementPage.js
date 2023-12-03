@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import SalesAndRevenueManagementContract from '../../contracts/SalesAndRevenueManagement.json';
 import contractAddress from '../../contracts/contract-address.json';
-
+import '../../escrow.css';
 
 
 const SalesAndRevenueManagementPage = () => {

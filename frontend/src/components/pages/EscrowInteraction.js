@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ethers } from 'ethers';
 import EscrowAndFundsDistributionABI from '../../contracts/EscrowAndFundsDistribution.json';
-
+import '../../escrow.css';
 const EscrowInteraction = () => {
   const [depositAmount, setDepositAmount] = useState('');
   const [recipientAddress, setRecipientAddress] = useState('');
