@@ -4,8 +4,7 @@ import { ethers } from 'ethers';
 import SalesAndRevenueManagementContract from '../../contracts/SalesAndRevenueManagement.json';
 import contractAddress from '../../contracts/contract-address.json';
 
-const localNodeUrl = 'http://localhost:8545';
-const provider = new ethers.providers.JsonRpcProvider(localNodeUrl);
+
 
 const SalesAndRevenueManagementPage = () => {
     const [projectId, setProjectId] = useState('');
@@ -14,19 +13,29 @@ const SalesAndRevenueManagementPage = () => {
     const [distributionAmount, setDistributionAmount] = useState('');
     const [paymentAmount, setPaymentAmount] = useState('');
 
-    const signer = provider.getSigner();
-    const managementContract = new ethers.Contract(
-        contractAddress.SalesAndRevenueManagement,
-        SalesAndRevenueManagementContract.abi,
-        signer
-    );
+    //Function to get the signer from metamask
+    const getSigner = async()=> {
+        await window.ethereum.request({method:'eth_requestAccounts'});
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        return provider.getSigner();
+    };
 
+    // Record Sale
     const handleRecordSale = async (e) => {
         e.preventDefault();
 
         try {
-            await provider.send("eth_requestAccounts", []);
-            const tx = await managementContract.recordSale(projectId, ethers.utils.parseEther(saleAmount), buyerAddress);
+            const signer = await getSigner();
+            const managementContract = new ethers.Contract(
+                contractAddress.SalesAndRevenueManagement,
+                SalesAndRevenueManagementContract.abi,
+                signer
+            );
+            const tx = await managementContract.recordSale(
+                projectId,
+                ethers.utils.parseEther(saleAmount),
+                buyerAddress
+            );
             await tx.wait();
 
             alert('Sale recorded successfully!');
@@ -35,27 +44,38 @@ const SalesAndRevenueManagementPage = () => {
             alert('An error occurred while recording the sale.');
         }
     };
-
-    const handleDistributeProfits = async (e) => {
+    //Dibstribute Profits
+    const handleDistributeProfits = async(e) =>{
         e.preventDefault();
 
-        try {
-            await provider.send("eth_requestAccounts", []);
+        try{
+            const signer = await getSigner();
+            const managementContract = new ethers.Contract(
+                contractAddress.SalesAndRevenueManagement,
+                SalesAndRevenueManagementContract.abi,
+                signer
+            );
             const tx = await managementContract.distributeProfits(ethers.utils.parseEther(distributionAmount));
             await tx.wait();
 
             alert('Profits distributed successfully!');
-        } catch (error) {
+        }catch(error){
             console.error(error);
             alert('An error occurred while distributing profits.');
         }
-    };
+    };    
 
+    // Make Payments
     const handleMakePayments = async (e) => {
         e.preventDefault();
 
         try {
-            await provider.send("eth_requestAccounts", []);
+            const signer = await getSigner();
+            const managementContract = new ethers.Contract(
+                contractAddress.SalesAndRevenueManagement,
+                SalesAndRevenueManagementContract.abi,
+                signer
+            );
             const tx = await managementContract.makePaymentsToFarmers(ethers.utils.parseEther(paymentAmount));
             await tx.wait();
 

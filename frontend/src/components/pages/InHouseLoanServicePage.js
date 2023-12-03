@@ -3,8 +3,7 @@ import { ethers } from 'ethers';
 import InHouseLoanServiceContract from '../../contracts/InHouseLoanService.json';
 import contractAddress from '../../contracts/contract-address.json';
 
-const localNodeUrl = 'http://localhost:8545';
-const provider = new ethers.providers.JsonRpcProvider(localNodeUrl);
+
 
 const InHouseLoanServicePage = () => {
     const [loanAmount, setLoanAmount] = useState('');
@@ -12,22 +11,26 @@ const InHouseLoanServicePage = () => {
     const [loanDuration, setLoanDuration] = useState('');
     const [borrowerAddress, setBorrowerAddress] = useState('');
 
-    const signer = provider.getSigner();
-    const loanServiceContract = new ethers.Contract(
-        contractAddress.InHouseLoanService,
-        InHouseLoanServiceContract.abi,
-        signer
-    );
-
+    // Function to get the signer from MetaMask
+    const getSigner = async () => {
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        return provider.getSigner();
+    };
     const handleApplyForLoan = async (e) => {
         e.preventDefault();
 
         try {
-            await provider.send("eth_requestAccounts", []);
+            const signer = await getSigner();
+            const loanServiceContract = new ethers.Contract(
+                contractAddress.InHouseLoanService,
+                InHouseLoanServiceContract.abi,
+                signer
+            );
             const tx = await loanServiceContract.applyForLoan(
                 ethers.utils.parseEther(loanAmount),
-                interestRate,
-                loanDuration
+                parseInt(interestRate),
+                parseInt(loanDuration)
             );
             await tx.wait();
 
@@ -38,11 +41,17 @@ const InHouseLoanServicePage = () => {
         }
     };
 
+    // Handle Approve Loan
     const handleApproveLoan = async (e) => {
         e.preventDefault();
 
         try {
-            await provider.send("eth_requestAccounts", []);
+            const signer = await getSigner();
+            const loanServiceContract = new ethers.Contract(
+                contractAddress.InHouseLoanService,
+                InHouseLoanServiceContract.abi,
+                signer
+            );
             const tx = await loanServiceContract.approveLoan(borrowerAddress);
             await tx.wait();
 
@@ -53,11 +62,17 @@ const InHouseLoanServicePage = () => {
         }
     };
 
+    // Handle Disburse Loan
     const handleDisburseLoan = async (e) => {
         e.preventDefault();
 
         try {
-            await provider.send("eth_requestAccounts", []);
+            const signer = await getSigner();
+            const loanServiceContract = new ethers.Contract(
+                contractAddress.InHouseLoanService,
+                InHouseLoanServiceContract.abi,
+                signer
+            );
             const tx = await loanServiceContract.disburseLoan(borrowerAddress);
             await tx.wait();
 

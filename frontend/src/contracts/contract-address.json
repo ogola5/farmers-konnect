@@ -1,3 +1,7 @@
 {
-  "InvestorFarmerRegistration": "0xcf3000f5768E9B664E92b0B2A8a9728CA80e5240"
+  "InvestorFarmerRegistration": "0xcf3000f5768E9B664E92b0B2A8a9728CA80e5240",
+  "EscrowAndFundsDistribution": "0xBF8C3f3F522C9D73FeD0D12Cf6B8936f738B6969",
+  "ExtensionOfficerReporting": "0x17249a69a06107683cc4adB952cE01b29d737E5e",
+  "InHouseLoanService": "0xF81A6A4d817e984284C6FCc65E73Df88837A6876",
+  "SalesAndRevenueManagement": "0x2273F5d248050D56876635FfF71033E41EEbB9b8"
 }
